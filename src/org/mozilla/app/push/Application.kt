@@ -1,22 +1,32 @@
 package org.mozilla.app.push
 
-import com.google.gson.Gson
+import com.google.firebase.FirebaseApp
 import io.ktor.application.Application
-import io.ktor.application.call
+import io.ktor.application.ApplicationStopping
 import io.ktor.application.install
 import io.ktor.features.ContentNegotiation
 import io.ktor.gson.gson
-import io.ktor.http.ContentType
-import io.ktor.request.receiveText
-import io.ktor.response.respondText
-import io.ktor.routing.post
 import io.ktor.routing.routing
-import java.util.*
+import org.mozilla.app.push.controller.pushSubscription
+import org.mozilla.app.push.db.initDB
+import org.mozilla.app.push.util.logger
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
 @Suppress("unused") // Referenced in application.conf
 fun Application.module() {
+
+    fun initFirebase() {
+        logger().info("[worker][initFirebase]")
+        FirebaseApp.initializeApp()
+    }
+
+    fun registerCleanUp(pool: com.zaxxer.hikari.HikariDataSource) {
+        environment.monitor.subscribe(ApplicationStopping) {
+            logger().info("[worker][monitor][stopping]")
+            pool.close()
+        }
+    }
 
     install(ContentNegotiation) {
         gson {
@@ -24,10 +34,14 @@ fun Application.module() {
         }
     }
 
-    routing {
-        post("/") {
-            call.respondText("HELLO WORLD!", contentType = ContentType.Text.Plain)
-        }
+    initFirebase()
 
+    initDB().also { pool ->
+
+        registerCleanUp(pool)
+
+        routing {
+            this.pushSubscription(pool)
+        }
     }
 }
