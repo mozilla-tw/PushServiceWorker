@@ -3,6 +3,7 @@ package org.mozilla.app.push.util
 import java.sql.Connection
 import java.sql.SQLException
 
+@Throws(SQLException::class)
 fun <T> Connection.transaction(logging: String = "SQLTransaction", action: () -> T): T? {
     return try {
         this.use {
@@ -18,8 +19,7 @@ fun <T> Connection.transaction(logging: String = "SQLTransaction", action: () ->
             return@use result
         }
     } catch (e: SQLException) {
-        e.printStackTrace()
-        logger().error("[worker][$logging][error]$e")
-        return null
+        logger().error("[worker][transaction][$logging][error]$e")
+        throw e
     }
 }

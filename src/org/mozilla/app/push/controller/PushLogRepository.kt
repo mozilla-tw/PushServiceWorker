@@ -39,6 +39,7 @@ class PushLogRepository constructor(private val dataSource: DataSource) {
         }
     }
 
+    @Throws(SQLException::class)
     private fun <T> handleWorkIdInternal(workId: String, handleWork: (String?) -> T): T? {
         val connection = dataSource.connection
         return connection.transaction("getDataById") {
