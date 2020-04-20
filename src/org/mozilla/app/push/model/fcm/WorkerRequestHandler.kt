@@ -38,7 +38,7 @@ fun WorkerRequest.notifyFcm(): Stream<WorkerRequestResponse>? {
                     mozMessageId = this.mozMessageId,
                     mozClientId = mozClientId,
                     mozBatchId = this.mozMsgBatch,
-                    error = "No token for such user"
+                    error = "[user]No token for such user"
                 )
             }
             val messageBuilder = Message.builder()
@@ -81,7 +81,7 @@ fun WorkerRequest.notifyFcm(): Stream<WorkerRequestResponse>? {
             )
         } catch (e: Exception) {
             // FirebaseMessagingException & IllegalArgumentException
-            val errorMessage = e.message ?: "FirebaseMessagingException"
+            val errorMessage = "[fcm]${e.message}"
             logger().error("[worker][notifyFcm][error]$errorMessage")
             return@map Error(
                 mozMessageId = this.mozMessageId,
