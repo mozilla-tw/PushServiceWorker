@@ -3,4 +3,4 @@ steps:
   args: ['jib', '--image' ,'gcr.io/msrp-dev01/push-service-worker']
 
 - name: gcr.io/cloud-builders/gcloud
-  args: ['run', 'deploy', 'push-service-worker', '--image', 'gcr.io/msrp-dev01/push-service-worker', '--platform', 'managed', '--region', 'us-central1', '--memory', '512M', '--cpu', '2', '--concurrency', '80', '--no-allow-unauthenticated']
+  args: ['run', 'deploy', 'push-service-worker', '--image', 'gcr.io/msrp-dev01/push-service-worker', '--platform', 'managed', '--region', 'us-central1', '--memory', '512Mi', '--cpu', '2', '--concurrency', '80', '--no-allow-unauthenticated']
